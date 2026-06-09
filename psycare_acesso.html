@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PsyCare — Acesso</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal-900: #1A3432;
+    --teal-800: #2A5754;
+    --teal-700: #3D7F7A;
+    --teal-500: #6AADA8;
+    --teal-200: #C4E4E2;
+    --teal-50:  #EFF8F7;
+    --amber:    #C87941;
+    --ink:      #1A2624;
+    --muted:    #6B7B79;
+    --border:   #D6E4E3;
+    --surface:  #F4F8F7;
+    --white:    #FFFFFF;
+    --danger:   #C0392B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--surface);
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .shell { display: flex; min-height: 100vh; }
+  .panel-left {
+    width: 420px; flex-shrink: 0;
+    background: var(--teal-800);
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    padding: 48px 40px;
+    position: relative; overflow: hidden;
+  }
+  .panel-left::before {
+    content: '';
+    position: absolute; top: -120px; right: -80px;
+    width: 340px; height: 340px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+  }
+  .panel-left::after {
+    content: '';
+    position: absolute; bottom: -60px; left: -40px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.03);
+  }
+  .panel-right {
+    flex: 1;
+    display: flex; align-items: center; justify-content: center;
+    padding: 40px 32px;
+  }
+  .form-box {
+    width: 100%; max-width: 400px;
+  }
+
+  /* ── LOGO ── */
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: #fff; font-weight: 400;
+    letter-spacing: -.3px; position: relative; z-index: 1;
+  }
+  .logo-mark {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 500; color: #fff;
+    border: 1px solid rgba(255,255,255,.2);
+    flex-shrink: 0;
+  }
+
+  /* ── LEFT COPY ── */
+  .left-copy { position: relative; z-index: 1; }
+  .left-copy h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px; line-height: 1.2;
+    color: #fff; font-weight: 400; margin-bottom: 16px;
+  }
+  .left-copy h2 em { font-style: italic; color: var(--teal-200); }
+  .left-copy p { font-size: 14px; color: rgba(255,255,255,.6); line-height: 1.7; margin-bottom: 28px; }
+  .feature-list { list-style: none; }
+  .feature-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: rgba(255,255,255,.7);
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+  }
+  .feature-list li:last-child { border: none; }
+  .feat-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal-500); flex-shrink: 0; margin-top: 5px;
+  }
+  .left-footer { font-size: 12px; color: rgba(255,255,255,.3); position: relative; z-index: 1; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; animation: fadeUp .25s ease; }
+  .screen.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .form-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px; color: var(--ink);
+    font-weight: 400; margin-bottom: 4px;
+  }
+  .form-sub { font-size: 13px; color: var(--muted); margin-bottom: 32px; line-height: 1.5; }
+
+  label {
+    display: block; font-size: 12px; font-weight: 500;
+    color: var(--muted); margin-bottom: 6px; letter-spacing: .02em;
+  }
+  input[type=text], input[type=email], input[type=password], input[type=tel], select {
+    width: 100%; padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink); background: var(--white);
+    outline: none; transition: border-color .15s;
+    appearance: none;
+  }
+  input:focus, select:focus { border-color: var(--teal-700); }
+  .field { margin-bottom: 16px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .btn-primary {
+    width: 100%; padding: 11px;
+    background: var(--teal-800); color: #fff;
+    border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: background .15s;
+    margin-top: 4px;
+  }
+  .btn-primary:hover { background: var(--teal-900); }
+  .btn-secondary {
+    width: 100%; padding: 10px;
+    background: transparent; color: var(--teal-800);
+    border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 14px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer; transition: all .15s; margin-top: 8px;
+  }
+  .btn-secondary:hover { border-color: var(--teal-700); background: var(--teal-50); }
+
+  .link-btn {
+    background: none; border: none; color: var(--teal-700);
+    font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+  .link-btn:hover { color: var(--teal-800); }
+
+  .divider {
+    display: flex; align-items: center; gap: 12px;
+    margin: 20px 0; font-size: 12px; color: var(--muted);
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .role-tabs {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px; margin-bottom: 24px;
+  }
+  .role-tab {
+    padding: 10px; border: 1.5px solid var(--border);
+    border-radius: 8px; background: var(--white);
+    cursor: pointer; text-align: center;
+    transition: all .15s; font-family: 'DM Sans', sans-serif;
+  }
+  .role-tab:hover { border-color: var(--teal-700); }
+  .role-tab.active {
+    border-color: var(--teal-800);
+    background: var(--teal-50);
+  }
+  .role-tab .rt-icon { font-size: 20px; margin-bottom: 4px; }
+  .role-tab .rt-label { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .role-tab .rt-sub { font-size: 11px; color: var(--muted); }
+
+  .error-msg {
+    font-size: 12px; color: var(--danger);
+    margin-top: 4px; display: none;
+  }
+
+  /* ── CLINIC CARDS ── */
+  .clinic-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .clinic-card {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px; background: var(--white);
+    cursor: pointer; transition: all .15s;
+  }
+  .clinic-card:hover { border-color: var(--teal-700); }
+  .clinic-card.selected { border-color: var(--teal-800); background: var(--teal-50); }
+  .clinic-avatar {
+    width: 44px; height: 44px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px; color: #fff; flex-shrink: 0;
+  }
+  .clinic-info { flex: 1; min-width: 0; }
+  .clinic-name { font-size: 14px; font-weight: 500; color: var(--ink); }
+  .clinic-addr { font-size: 12px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .clinic-meta { display: flex; gap: 10px; margin-top: 4px; }
+  .clinic-badge {
+    font-size: 11px; padding: 1px 7px; border-radius: 100px;
+    background: var(--teal-50); color: var(--teal-700);
+    border: 1px solid var(--teal-200);
+  }
+  .clinic-check {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all .15s;
+  }
+  .clinic-card.selected .clinic-check {
+    background: var(--teal-800); border-color: var(--teal-800);
+  }
+  .clinic-card.selected .clinic-check::after {
+    content: ''; width: 8px; height: 5px;
+    border-left: 1.5px solid #fff; border-bottom: 1.5px solid #fff;
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+
+  /* ── BREADCRUMB ── */
+  .breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted); margin-bottom: 24px;
+  }
+  .breadcrumb span { color: var(--ink); font-weight: 500; }
+  .bc-sep { color: var(--border); }
+
+  /* ── SECTION TABS (cadastro) ── */
+  .tab-bar {
+    display: flex; border-bottom: 1.5px solid var(--border);
+    margin-bottom: 24px; gap: 0;
+  }
+  .tab-item {
+    padding: 8px 16px; font-size: 13px; font-weight: 500;
+    color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent;
+    margin-bottom: -1.5px; transition: all .15s;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-item.active { color: var(--teal-800); border-bottom-color: var(--teal-800); }
+
+  /* ── STEP INDICATOR ── */
+  .steps {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 28px;
+  }
+  .step-item {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  .step-circle {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    border: 1.5px solid var(--border);
+    color: var(--muted); background: var(--white);
+    transition: all .2s;
+  }
+  .step-circle.done { background: var(--teal-800); border-color: var(--teal-800); color: #fff; }
+  .step-circle.active { border-color: var(--teal-800); color: var(--teal-800); }
+  .step-label { font-size: 12px; color: var(--muted); }
+  .step-label.active { color: var(--teal-800); font-weight: 500; }
+  .step-line { flex: 1; height: 1px; background: var(--border); margin: 0 8px; }
+  .step-line.done { background: var(--teal-800); }
+
+  /* ── CLINIC FORM ── */
+  .upload-area {
+    border: 1.5px dashed var(--border); border-radius: 8px;
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: border-color .15s; margin-bottom: 16px;
+  }
+  .upload-area:hover { border-color: var(--teal-700); }
+  .upload-icon { font-size: 24px; margin-bottom: 6px; color: var(--muted); }
+  .upload-text { font-size: 13px; color: var(--muted); }
+  .upload-text strong { color: var(--teal-700); }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--teal-800); color: #fff;
+    padding: 10px 20px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: all .3s; z-index: 100;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--muted); cursor: pointer;
+    background: none; border: none; font-family: 'DM Sans', sans-serif;
+    margin-bottom: 20px; padding: 0; transition: color .15s;
+  }
+  .back-link:hover { color: var(--teal-800); }
+
+  /* ── VÍNCULO ── */
+  .vinculo-card {
+    border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 16px; background: var(--white); margin-bottom: 12px;
+  }
+  .vinculo-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .vinculo-status {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; padding: 3px 10px; border-radius: 100px; font-weight: 500;
+  }
+  .vs-pending { background: #FEF3C7; color: #92400E; }
+  .vs-ok { background: var(--teal-50); color: var(--teal-800); }
+
+  select option { font-size: 14px; }
+
+  @media (max-width: 700px) {
+    .panel-left { display: none; }
+    .panel-right { padding: 24px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ── PAINEL ESQUERDO ── -->
+  <div class="panel-left">
+    <div class="logo">
+      <div class="logo-mark">P</div>
+      PsyCare
+    </div>
+
+    <div class="left-copy">
+      <h2>Gestão <em>inteligente</em><br>de consultas</h2>
+      <p>Plataforma completa para psicólogos e clínicas gerenciarem agendamentos, pacientes e relatórios em um só lugar.</p>
+      <ul class="feature-list">
+        <li><div class="feat-dot"></div>Agendamento online com confirmação automática</li>
+        <li><div class="feat-dot"></div>Multi-clínica — trabalhe em N locais</li>
+        <li><div class="feat-dot"></div>Pré-relatório de atendimento integrado</li>
+        <li><div class="feat-dot"></div>Notificações via e-mail, WhatsApp ou SMS</li>
+        <li><div class="feat-dot"></div>Relatórios por clínica e consolidado</li>
+      </ul>
+    </div>
+
+    <div class="left-footer">© 2026 PsyCare · FATEC Mogi das Cruzes</div>
+  </div>
+
+  <!-- ── PAINEL DIREITO ── -->
+  <div class="panel-right">
+    <div class="form-box">
+
+      <!-- ══════════════════════════════════════
+           TELA 1 — LOGIN
+      ══════════════════════════════════════ -->
+      <div class="screen active" id="screen-login">
+        <p style="font-size:12px;color:var(--muted);margin-bottom:6px;letter-spacing:.04em;font-weight:500;">BEM-VINDO</p>
+        <h1 class="form-title">Entrar na conta</h1>
+        <p class="form-sub">Acesse sua conta para continuar.</p>
+
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="login-email" placeholder="seu@email.com">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="login-senha" placeholder="••••••••">
+          <div class="error-msg" id="login-error">E-mail ou senha incorretos.</div>
+        </div>
+        <div style="text-align:right;margin-bottom:16px;">
+          <button class="link-btn" onclick="showScreen('screen-recuperar')">Esqueci minha senha</button>
+        </div>
+
+        <button class="btn-primary" onclick="doLogin()">Entrar</button>
+
+        <div class="divider">ou</div>
+
+        <button class="btn-secondary" onclick="showScreen('screen-cadastro')">Criar conta</button>
+
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:20px;">
+          Psicólogo ou clínica? <button class="link-btn" onclick="showScreen('screen-cadastro');setRole('psi')">Cadastre-se aqui</button>
+        </p>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           TELA 2 — CADASTRO
+      ══════════════════════════════════════ -->
+      <div class="screen" id="screen-cadastro">
+        <button class="back-link" onclick="showScreen('screen-login')">
+          ← Voltar para login
+        </button>
+        <h1 class="form-title">Criar conta</h1>
+        <p class="form-sub">Escolha seu perfil para personalizar sua experiência.</p>
+
+        <div class="role-tabs">
+          <div class="role-tab active" id="tab-pac" onclick="setRole('pac')">
+            <div class="rt-icon">🧑‍💼</div>
+            <div class="rt-label">Paciente</div>
+            <div class="rt-sub">Quero agendar consultas</div>
+          </div>
+          <div class="role-tab" id="tab-psi" onclick="setRole('psi')">
+            <div class="rt-icon">🧠</div>
+            <div class="rt-label">Psicólogo(a)</div>
+            <div class="rt-sub">Quero gerenciar atendimentos</div>
+          </div>
+        </div>
+
+        <!-- Campos comuns -->
+        <div class="field-row">
+          <div class="field">
+            <label>Nome</label>
+            <input type="text" placeholder="Felipe">
+          </div>
+          <div class="field">
+            <label>Sobrenome</label>
+            <input type="text" placeholder="Cunha">
+          </div>
+        </div>
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" placeholder="seu@email.com">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Senha</label>
+            <input type="password" placeholder="Mín. 8 caracteres">
+          </div>
+          <div class="field">
+            <label>Confirmar senha</label>
+            <input type="password" placeholder="••••••••">
+          </div>
+        </div>
+
+        <!-- Campos exclusivos psicólogo -->
+        <div id="campos-psi" style="display:none;">
+          <div class="field-row">
+            <div class="field">
+              <label>CRP</label>
+              <input type="text" placeholder="06/000000">
+            </div>
+            <div class="field">
+              <label>Telefone</label>
+              <input type="tel" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+          <div class="field">
+            <label>Especialidade principal</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Terapia Cognitivo-Comportamental (TCC)</option>
+              <option>Psicanálise</option>
+              <option>Gestalt-terapia</option>
+              <option>Terapia Humanista</option>
+              <option>Psicologia Comportamental</option>
+              <option>Outra</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Modalidade de atendimento</label>
+            <select>
+              <option value="">Selecione...</option>
+              <option>Presencial</option>
+              <option>Online</option>
+              <option>Presencial e Online</option>
+            </select>
+          </div>
+        </div>
+
+        <button class="btn-primary" onclick="doCadastro()">Criar conta</button>
+        <p style="font-size:12px;color:var(--muted);text-align:center;margin-top:16px;">
+          Já tem conta? <button class="link-btn" onclick="showScreen('screen-login')">Entrar</button>
+        </p>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           TELA 3 — SELECIONAR CLÍNICA
+      ══════════════════════════════════════ -->
+      <div class="screen" id="screen-clinicas">
+        <div class="breadcrumb">
+          Login <span class="bc-sep">›</span> <span>Selecionar clínica</span>
+        </div>
+
+        <h1 class="form-title">Olá, Gustavo</h1>
+        <p class="form-sub" id="clinicas-sub">Selecione a clínica com a qual deseja trabalhar agora.</p>
+
+        <div class="clinic-grid" id="clinic-list">
+          <div class="clinic-card" onclick="selectClinic(this)">
+            <div class="clinic-avatar" style="background:var(--teal-800);">B</div>
+            <div class="clinic-info">
+              <div class="clinic-name">Clínica Bem-Estar</div>
+              <div class="clinic-addr">Av. Paulista, 1200 — Mogi das Cruzes</div>
+              <div class="clinic-meta">
+                <span class="clinic-badge">3 agendamentos hoje</span>
+                <span class="clinic-badge">Psicóloga</span>
+              </div>
+            </div>
+            <div class="clinic-check"></div>
+          </div>
+
+          <div class="clinic-card" onclick="selectClinic(this)">
+            <div class="clinic-avatar" style="background:#5B8FB9;">M</div>
+            <div class="clinic-info">
+              <div class="clinic-name">Mental Saúde</div>
+              <div class="clinic-addr">Rua XV de Novembro, 340 — Suzano</div>
+              <div class="clinic-meta">
+                <span class="clinic-badge">1 agendamento hoje</span>
+                <span class="clinic-badge">Psicóloga</span>
+              </div>
+            </div>
+            <div class="clinic-check"></div>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-entrar-clinica" style="opacity:.4;pointer-events:none;" onclick="goToDashboard()">
+          Entrar na clínica
+        </button>
+        <button class="btn-secondary" onclick="showScreen('screen-cad-clinica')">
+          + Cadastrar nova clínica
+        </button>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           TELA 4 — CADASTRAR CLÍNICA
+      ══════════════════════════════════════ -->
+      <div class="screen" id="screen-cad-clinica">
+        <button class="back-link" onclick="showScreen('screen-clinicas')">
+          ← Voltar para clínicas
+        </button>
+
+        <!-- Stepper -->
+        <div class="steps">
+          <div class="step-item">
+            <div class="step-circle active" id="st1">1</div>
+            <span class="step-label active" id="stl1">Dados</span>
+          </div>
+          <div class="step-line" id="sl1"></div>
+          <div class="step-item">
+            <div class="step-circle" id="st2">2</div>
+            <span class="step-label" id="stl2">Endereço</span>
+          </div>
+          <div class="step-line" id="sl2"></div>
+          <div class="step-item">
+            <div class="step-circle" id="st3">3</div>
+            <span class="step-label" id="stl3">Identidade</span>
+          </div>
+        </div>
+
+        <!-- Step 1 -->
+        <div id="cad-step1">
+          <h1 class="form-title">Dados da clínica</h1>
+          <p class="form-sub">Informações principais da clínica.</p>
+
+          <div class="field">
+            <label>Nome da clínica</label>
+            <input type="text" id="cad-nome" placeholder="Ex: Clínica Ser Bem">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>CNPJ</label>
+              <input type="text" placeholder="00.000.000/0001-00">
+            </div>
+            <div class="field">
+              <label>Telefone</label>
+              <input type="tel" placeholder="(11) 99999-9999">
+            </div>
+          </div>
+          <div class="field">
+            <label>E-mail da clínica</label>
+            <input type="email" placeholder="contato@clinica.com.br">
+          </div>
+          <button class="btn-primary" onclick="nextStep(2)">Continuar</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div id="cad-step2" style="display:none;">
+          <h1 class="form-title">Endereço</h1>
+          <p class="form-sub">Onde a clínica está localizada?</p>
+
+          <div class="field-row">
+            <div class="field">
+              <label>CEP</label>
+              <input type="text" placeholder="00000-000">
+            </div>
+            <div class="field">
+              <label>Número</label>
+              <input type="text" placeholder="123">
+            </div>
+          </div>
+          <div class="field">
+            <label>Logradouro</label>
+            <input type="text" placeholder="Rua, Av...">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Bairro</label>
+              <input type="text" placeholder="Centro">
+            </div>
+            <div class="field">
+              <label>Cidade</label>
+              <input type="text" placeholder="Mogi das Cruzes">
+            </div>
+          </div>
+          <div class="field">
+            <label>Complemento <span style="font-weight:400;font-size:11px;">(opcional)</span></label>
+            <input type="text" placeholder="Sala 204, 2º andar...">
+          </div>
+          <button class="btn-primary" onclick="nextStep(3)">Continuar</button>
+          <button class="btn-secondary" onclick="nextStep(1)">Voltar</button>
+        </div>
+
+        <!-- Step 3 -->
+        <div id="cad-step3" style="display:none;">
+          <h1 class="form-title">Identidade visual</h1>
+          <p class="form-sub">Personalize a aparência da clínica no sistema.</p>
+
+          <div class="field">
+            <label>Logo da clínica <span style="font-weight:400;font-size:11px;">(opcional)</span></label>
+            <div class="upload-area" onclick="showToast('Upload de logo em desenvolvimento')">
+              <div class="upload-icon">🖼</div>
+              <div class="upload-text"><strong>Clique para enviar</strong> ou arraste aqui</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px;">PNG, JPG — máx. 2MB</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Cor principal da clínica</label>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+              <div onclick="selectColor(this,'#2A5754')" style="width:32px;height:32px;border-radius:8px;background:#2A5754;cursor:pointer;border:2px solid transparent;transition:all .15s" class="color-opt selected-color"></div>
+              <div onclick="selectColor(this,'#3D5A80')" style="width:32px;height:32px;border-radius:8px;background:#3D5A80;cursor:pointer;border:2px solid transparent;transition:all .15s" class="color-opt"></div>
+              <div onclick="selectColor(this,'#6D4C8B')" style="width:32px;height:32px;border-radius:8px;background:#6D4C8B;cursor:pointer;border:2px solid transparent;transition:all .15s" class="color-opt"></div>
+              <div onclick="selectColor(this,'#C87941')" style="width:32px;height:32px;border-radius:8px;background:#C87941;cursor:pointer;border:2px solid transparent;transition:all .15s" class="color-opt"></div>
+              <div onclick="selectColor(this,'#5B8A68')" style="width:32px;height:32px;border-radius:8px;background:#5B8A68;cursor:pointer;border:2px solid transparent;transition:all .15s" class="color-opt"></div>
+            </div>
+          </div>
+
+          <button class="btn-primary" onclick="finishClinic()">Cadastrar clínica</button>
+          <button class="btn-secondary" onclick="nextStep(2)">Voltar</button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           TELA 5 — VINCULAR PACIENTE (Modelo B)
+      ══════════════════════════════════════ -->
+      <div class="screen" id="screen-vinculo">
+        <button class="back-link" onclick="showScreen('screen-clinicas')">
+          ← Voltar
+        </button>
+        <h1 class="form-title">Vincular-se a uma clínica</h1>
+        <p class="form-sub">Você tem um cadastro único. Para receber atendimento, vincule-se a uma ou mais clínicas.</p>
+
+        <div class="vinculo-card">
+          <div class="vinculo-header">
+            <div class="clinic-avatar" style="background:var(--teal-800);width:40px;height:40px;border-radius:9px;font-size:15px;">B</div>
+            <div style="flex:1">
+              <div style="font-size:14px;font-weight:500">Clínica Bem-Estar</div>
+              <div style="font-size:12px;color:var(--muted)">Convidado por Dra. Ana Paula</div>
+            </div>
+            <span class="vinculo-status vs-pending">⏳ Pendente</span>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-primary" style="flex:1;margin-top:0;" onclick="acceptVinculo(this)">Aceitar vínculo</button>
+            <button class="btn-secondary" style="flex:1;margin-top:0;">Recusar</button>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:20px;">
+          <label>Buscar clínica pelo código ou nome</label>
+          <div style="display:flex;gap:8px;">
+            <input type="text" placeholder="Ex: PSY-0023 ou nome da clínica" style="flex:1">
+            <button class="btn-primary" style="width:auto;padding:10px 16px;margin-top:0;" onclick="showToast('Clínica não encontrada. Tente outro código.')">Buscar</button>
+          </div>
+        </div>
+
+        <button class="btn-primary" style="margin-top:8px;" onclick="showScreen('screen-clinicas')">
+          Ir para minhas clínicas
+        </button>
+      </div>
+
+      <!-- ══════════════════════════════════════
+           TELA 6 — RECUPERAR SENHA
+      ══════════════════════════════════════ -->
+      <div class="screen" id="screen-recuperar">
+        <button class="back-link" onclick="showScreen('screen-login')">
+          ← Voltar para login
+        </button>
+        <h1 class="form-title">Recuperar senha</h1>
+        <p class="form-sub">Informe seu e-mail e enviaremos um link de redefinição.</p>
+        <div class="field">
+          <label>E-mail cadastrado</label>
+          <input type="email" placeholder="seu@email.com">
+        </div>
+        <button class="btn-primary" onclick="showToast('E-mail de recuperação enviado!')">Enviar link</button>
+        <button class="btn-secondary" onclick="showScreen('screen-login')">Cancelar</button>
+      </div>
+
+    </div><!-- /form-box -->
+  </div><!-- /panel-right -->
+</div><!-- /shell -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Nav rápida de demonstração -->
+<div style="position:fixed;bottom:20px;right:20px;background:var(--ink);border-radius:10px;padding:10px 14px;font-size:12px;color:rgba(255,255,255,.5);">
+  <div style="color:rgba(255,255,255,.8);font-weight:500;margin-bottom:6px;font-size:11px;letter-spacing:.04em;">DEMO — NAVEGAR</div>
+  <div style="display:flex;flex-direction:column;gap:4px;">
+    <button onclick="showScreen('screen-login')"       style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T1 Login</button>
+    <button onclick="showScreen('screen-cadastro')"    style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T2 Cadastro</button>
+    <button onclick="showScreen('screen-clinicas')"    style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T3 Selecionar clínica</button>
+    <button onclick="showScreen('screen-cad-clinica')" style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T4 Cadastrar clínica</button>
+    <button onclick="showScreen('screen-vinculo')"     style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T5 Vincular paciente</button>
+    <button onclick="showScreen('screen-recuperar')"   style="background:none;border:none;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;text-align:left;font-family:'DM Sans',sans-serif;">T6 Recuperar senha</button>
+  </div>
+</div>
+
+<script>
+// ── NAVEGAÇÃO ──────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const t = document.getElementById(id);
+  if (t) t.classList.add('active');
+}
+
+// ── LOGIN ──────────────────────────────────────────────────
+function doLogin() {
+  const email = document.getElementById('login-email').value;
+  const senha = document.getElementById('login-senha').value;
+  const err   = document.getElementById('login-error');
+  if (!email || !senha) {
+    err.style.display = 'block';
+    err.textContent   = 'Preencha e-mail e senha.';
+    return;
+  }
+  err.style.display = 'none';
+  showScreen('screen-clinicas');
+}
+
+// ── CADASTRO ───────────────────────────────────────────────
+function setRole(role) {
+  document.getElementById('tab-pac').classList.toggle('active', role === 'pac');
+  document.getElementById('tab-psi').classList.toggle('active', role === 'psi');
+  document.getElementById('campos-psi').style.display = role === 'psi' ? 'block' : 'none';
+}
+function doCadastro() {
+  showToast('Conta criada! Selecione sua clínica.');
+  setTimeout(() => showScreen('screen-clinicas'), 800);
+}
+
+// ── CLÍNICAS ───────────────────────────────────────────────
+function selectClinic(card) {
+  document.querySelectorAll('.clinic-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const btn = document.getElementById('btn-entrar-clinica');
+  btn.style.opacity = '1';
+  btn.style.pointerEvents = 'auto';
+}
+function goToDashboard() {
+  showToast('Entrando na clínica...');
+}
+
+// ── CAD. CLÍNICA ───────────────────────────────────────────
+let cadStep = 1;
+function nextStep(n) {
+  document.getElementById('cad-step' + cadStep).style.display = 'none';
+  // atualiza stepper
+  const circle = document.getElementById('st' + cadStep);
+  const label  = document.getElementById('stl' + cadStep);
+  circle.classList.remove('active'); circle.classList.add('done'); circle.textContent = '✓';
+  label.classList.remove('active');
+  if (cadStep < n) {
+    const line = document.getElementById('sl' + cadStep);
+    if (line) line.classList.add('done');
+  }
+  cadStep = n;
+  document.getElementById('cad-step' + cadStep).style.display = 'block';
+  const nc = document.getElementById('st' + cadStep);
+  const nl = document.getElementById('stl' + cadStep);
+  if (nc) { nc.classList.remove('done'); nc.classList.add('active'); nc.textContent = cadStep; }
+  if (nl) { nl.classList.add('active'); }
+}
+function finishClinic() {
+  const nome = document.getElementById('cad-nome').value || 'Nova Clínica';
+  showToast('Clínica "' + nome + '" cadastrada!');
+  setTimeout(() => { cadStep = 1; showScreen('screen-clinicas'); }, 900);
+}
+
+// ── COR ────────────────────────────────────────────────────
+function selectColor(el, color) {
+  document.querySelectorAll('.color-opt').forEach(c => c.style.borderColor = 'transparent');
+  el.style.borderColor = '#fff';
+  el.style.outline = '2px solid ' + color;
+}
+
+// ── VÍNCULO ────────────────────────────────────────────────
+function acceptVinculo(btn) {
+  const card = btn.closest('.vinculo-card');
+  card.querySelector('.vinculo-status').className = 'vinculo-status vs-ok';
+  card.querySelector('.vinculo-status').textContent = '✓ Vinculado';
+  btn.closest('div').innerHTML = '<p style="font-size:13px;color:var(--teal-800);font-weight:500;">Vínculo aceito com sucesso!</p>';
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

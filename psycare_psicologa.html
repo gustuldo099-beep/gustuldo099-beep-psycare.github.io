@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PsyCare — Psicóloga</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal-900:#1A3432;--teal-800:#2A5754;--teal-700:#3D7F7A;
+  --teal-500:#6AADA8;--teal-200:#C4E4E2;--teal-50:#EFF8F7;
+  --amber:#C87941;--amber-50:#FDF3E7;
+  --ink:#1A2624;--muted:#6B7B79;--muted2:#9EADAB;
+  --border:#D6E4E3;--surface:#F4F8F7;--white:#FFFFFF;
+  --danger:#C0392B;--danger-50:#FDECEA;
+  --success:#1D9E75;--success-50:#E8F7F2;
+  --warning:#D4860A;--warning-50:#FEF6E4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--surface);min-height:100vh}
+
+.shell{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:220px;flex-shrink:0;background:var(--teal-900);display:flex;flex-direction:column;padding:0;position:fixed;top:0;left:0;bottom:0;z-index:50}
+.sidebar-logo{display:flex;align-items:center;gap:10px;padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo-mark{width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:14px;color:#fff;border:1px solid rgba(255,255,255,.2);flex-shrink:0}
+.logo-name{font-family:'DM Serif Display',serif;font-size:17px;color:#fff;font-weight:400}
+.clinic-switcher{margin:12px 12px 4px;background:rgba(255,255,255,.07);border-radius:9px;padding:10px 12px;cursor:pointer;transition:background .15s;border:1px solid rgba(255,255,255,.1)}
+.clinic-switcher:hover{background:rgba(255,255,255,.12)}
+.cs-label{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em;font-weight:500;text-transform:uppercase}
+.cs-name{font-size:13px;color:#fff;font-weight:500;margin-top:1px}
+.cs-sub{font-size:11px;color:rgba(255,255,255,.45);margin-top:1px}
+.nav{flex:1;padding:8px 10px;overflow-y:auto}
+.nav-section{font-size:10px;color:rgba(255,255,255,.3);letter-spacing:.07em;font-weight:500;text-transform:uppercase;padding:14px 8px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;font-size:13px;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;margin-bottom:1px}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.13);color:#fff;font-weight:500}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--amber);color:#fff;font-size:10px;font-weight:500;padding:1px 6px;border-radius:100px}
+.sidebar-footer{padding:12px;border-top:1px solid rgba(255,255,255,.08)}
+.user-chip{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s}
+.user-chip:hover{background:rgba(255,255,255,.08)}
+.avatar{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+.user-name{font-size:13px;color:#fff;font-weight:500}
+.user-role{font-size:11px;color:rgba(255,255,255,.4)}
+
+/* MAIN */
+.main{margin-left:220px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:0 28px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+.page-title{font-size:16px;font-weight:500;color:var(--ink)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.icon-btn{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--white);cursor:pointer;font-size:15px;transition:all .15s;position:relative}
+.icon-btn:hover{background:var(--surface);border-color:var(--teal-500)}
+.notif-dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--amber);border:1.5px solid var(--white)}
+.content{padding:28px;flex:1}
+
+/* SCREENS */
+.screen{display:none;animation:fadeUp .2s ease}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* LAYOUT */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+.card-sm{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+
+/* METRIC */
+.metric{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 18px}
+.metric .m-icon{font-size:20px;margin-bottom:8px}
+.metric .m-val{font-size:26px;font-weight:500;color:var(--ink);line-height:1}
+.metric .m-lbl{font-size:12px;color:var(--muted);margin-top:4px}
+.metric .m-trend{font-size:11px;margin-top:6px}
+.trend-up{color:var(--success)}
+.trend-dn{color:var(--danger)}
+
+/* AG CARD */
+.ag-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px;transition:border-color .15s}
+.ag-card:hover{border-color:var(--teal-500)}
+.ag-left{display:flex;flex-direction:column;align-items:center;justify-content:center;width:46px;flex-shrink:0;background:var(--teal-50);border-radius:8px;padding:7px 4px;text-align:center}
+.ag-day{font-size:17px;font-weight:500;color:var(--teal-800);line-height:1}
+.ag-month{font-size:10px;color:var(--teal-700);font-weight:500;text-transform:uppercase}
+.ag-body{flex:1;min-width:0}
+.ag-name{font-size:14px;font-weight:500;color:var(--ink)}
+.ag-meta{font-size:12px;color:var(--muted);margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px}
+.b-confirm{background:var(--success-50);color:var(--success)}
+.b-pending{background:var(--warning-50);color:var(--warning)}
+.b-cancel{background:var(--danger-50);color:var(--danger)}
+.b-done{background:var(--surface);color:var(--muted)}
+.b-online{background:var(--teal-50);color:var(--teal-700)}
+.b-pago{background:#EAF3DE;color:#1D9E75}
+.b-conv{background:var(--amber-50);color:var(--amber)}
+.b-npago{background:var(--danger-50);color:var(--danger)}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:all .15s;border:none}
+.btn-primary{background:var(--teal-800);color:#fff}
+.btn-primary:hover{background:var(--teal-900)}
+.btn-ghost{background:transparent;color:var(--teal-800);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--teal-50);border-color:var(--teal-500)}
+.btn-danger{background:transparent;color:var(--danger);border:1px solid #f0c0bb}
+.btn-danger:hover{background:var(--danger-50)}
+.btn-success{background:var(--success);color:#fff}
+.btn-success:hover{background:#178a63}
+.btn-amber{background:var(--amber);color:#fff}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:6px}
+.btn-full{width:100%;justify-content:center}
+
+/* SEC HEADER */
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-title{font-size:15px;font-weight:500;color:var(--ink)}
+.sec-link{font-size:12px;color:var(--teal-700);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+.sec-link:hover{text-decoration:underline}
+
+/* FORM */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:5px;letter-spacing:.02em}
+input[type=text],input[type=email],input[type=tel],input[type=date],input[type=time],input[type=number],select,textarea{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);outline:none;transition:border-color .15s;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--teal-700)}
+textarea{resize:vertical;min-height:80px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* SLOT */
+.slot-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px}
+.slot{padding:7px 5px;border:1.5px solid var(--border);border-radius:8px;text-align:center;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;background:var(--white);transition:all .15s}
+.slot:hover{border-color:var(--teal-700)}
+.slot.selected{border-color:var(--teal-800);background:var(--teal-50);color:var(--teal-800)}
+.slot.booked{border-color:var(--border);background:var(--surface);color:var(--muted2);cursor:not-allowed}
+.slot.blocked{background:#FEF2F2;border-color:#FCA5A5;color:var(--danger);cursor:not-allowed}
+
+/* PACIENTE CARD */
+.pac-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:10px;background:var(--white);cursor:pointer;transition:border-color .15s;margin-bottom:8px}
+.pac-card:hover{border-color:var(--teal-500)}
+.pac-avatar{width:40px;height:40px;border-radius:50%;background:var(--teal-200);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--teal-800);flex-shrink:0}
+
+/* PRONTUÁRIO */
+.pront-entry{border-left:2px solid var(--teal-200);padding:10px 14px;margin-bottom:10px;background:var(--teal-50);border-radius:0 8px 8px 0}
+.pront-date{font-size:11px;color:var(--muted);margin-bottom:3px;font-weight:500}
+.pront-text{font-size:13px;color:var(--ink);line-height:1.6}
+
+/* TOGGLE */
+.toggle{position:relative;width:40px;height:22px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;border-radius:100px;background:var(--border);cursor:pointer;transition:background .2s}
+.toggle input:checked + .toggle-track{background:var(--teal-800)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s;pointer-events:none}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(18px)}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:.5px solid var(--border)}
+.toggle-row:last-child{border:none}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,38,36,.45);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-overlay.open{opacity:1;pointer-events:all}
+.modal-box{background:var(--white);border-radius:14px;padding:24px;width:460px;max-width:92vw;transform:translateY(12px);transition:transform .2s;position:relative;max-height:90vh;overflow-y:auto}
+.modal-overlay.open .modal-box{transform:translateY(0)}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;font-weight:400;margin-bottom:6px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.5}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;color:var(--muted);cursor:pointer}
+
+/* CHART MINI */
+.mini-bar{display:flex;align-items:flex-end;gap:6px;height:80px;padding:0 4px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar-fill{width:100%;border-radius:4px 4px 0 0;background:var(--teal-700);transition:height .4s}
+.bar-lbl{font-size:10px;color:var(--muted);white-space:nowrap}
+.bar-val{font-size:10px;font-weight:500;color:var(--teal-800)}
+
+/* CALENDAR SEMANA */
+.week-cal{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.week-header{display:grid;grid-template-columns:60px repeat(5,1fr);border-bottom:1px solid var(--border)}
+.wh-empty{padding:10px 8px;border-right:1px solid var(--border)}
+.wh-day{padding:10px 8px;text-align:center;border-right:1px solid var(--border)}
+.wh-day:last-child{border-right:none}
+.wh-day .wd-name{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase}
+.wh-day .wd-num{font-size:16px;font-weight:500;color:var(--ink)}
+.wh-day.today .wd-num{background:var(--teal-800);color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:2px auto 0}
+.week-row{display:grid;grid-template-columns:60px repeat(5,1fr);border-bottom:.5px solid var(--border)}
+.week-row:last-child{border:none}
+.wr-time{padding:8px;font-size:11px;color:var(--muted);border-right:1px solid var(--border);display:flex;align-items:flex-start;justify-content:center;padding-top:10px}
+.wr-cell{border-right:.5px solid var(--border);min-height:50px;padding:4px;position:relative}
+.wr-cell:last-child{border-right:none}
+.ev{border-radius:6px;padding:4px 7px;font-size:11px;font-weight:500;cursor:pointer;margin-bottom:3px;transition:opacity .15s}
+.ev:hover{opacity:.85}
+.ev-confirm{background:var(--success-50);color:var(--success);border-left:2px solid var(--success)}
+.ev-pending{background:var(--warning-50);color:var(--warning);border-left:2px solid var(--warning)}
+
+/* FINANCIAL */
+.fin-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:.5px solid var(--border)}
+.fin-row:last-child{border:none}
+.fin-row .fr-date{font-size:12px;color:var(--muted);min-width:60px}
+.fin-row .fr-name{flex:1;font-size:13px;font-weight:500;color:var(--ink)}
+.fin-row .fr-method{font-size:12px;color:var(--muted);min-width:80px}
+.fin-row .fr-val{font-size:14px;font-weight:500;color:var(--ink);min-width:80px;text-align:right}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--teal-800);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;z-index:200;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* QUICK NAV */
+.qnav{position:fixed;bottom:20px;right:20px;background:var(--ink);border-radius:10px;padding:10px 14px;font-size:12px;z-index:300}
+.qnav-title{color:rgba(255,255,255,.4);font-size:10px;font-weight:500;letter-spacing:.05em;margin-bottom:6px;text-transform:uppercase}
+.qnav button{display:block;background:none;border:none;color:rgba(255,255,255,.55);font-size:12px;cursor:pointer;text-align:left;padding:3px 0;font-family:'DM Sans',sans-serif;width:100%}
+.qnav button:hover{color:#fff}
+.qnav button.on{color:var(--teal-200);font-weight:500}
+
+/* TABS */
+.tab-bar{display:flex;border-bottom:1.5px solid var(--border);margin-bottom:18px}
+.tab-item{padding:8px 16px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:'DM Sans',sans-serif}
+.tab-item.active{color:var(--teal-800);border-bottom-color:var(--teal-800)}
+
+.link-btn{background:none;border:none;color:var(--teal-700);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:underline;text-underline-offset:2px}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">P</div>
+    <span class="logo-name">PsyCare</span>
+  </div>
+  <div class="clinic-switcher" onclick="showToast('Trocar de clínica')">
+    <div class="cs-label">Clínica ativa</div>
+    <div class="cs-name">Clínica Bem-Estar</div>
+    <div class="cs-sub">⇄ Trocar clínica</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" id="nav-dashboard" onclick="go('dashboard')"><span class="nav-icon">🏠</span>Início</div>
+    <div class="nav-item" id="nav-agenda" onclick="go('agenda')"><span class="nav-icon">📅</span>Agenda semanal</div>
+    <div class="nav-item" id="nav-horarios" onclick="go('horarios')"><span class="nav-icon">🕐</span>Gerenciar horários</div>
+    <div class="nav-section">Agendamentos</div>
+    <div class="nav-item" id="nav-pendentes" onclick="go('pendentes')"><span class="nav-icon">⏳</span>Pendentes<span class="nav-badge">3</span></div>
+    <div class="nav-item" id="nav-agendamentos" onclick="go('agendamentos')"><span class="nav-icon">📋</span>Todos os agendamentos</div>
+    <div class="nav-section">Pacientes</div>
+    <div class="nav-item" id="nav-pacientes" onclick="go('pacientes')"><span class="nav-icon">👥</span>Gerenciar pacientes</div>
+    <div class="nav-item" id="nav-convenios" onclick="go('convenios')"><span class="nav-icon">🏥</span>Convênios<span class="nav-badge">2</span></div>
+    <div class="nav-section">Financeiro</div>
+    <div class="nav-item" id="nav-financeiro" onclick="go('financeiro')"><span class="nav-icon">💰</span>Pagamentos</div>
+    <div class="nav-item" id="nav-relatorios" onclick="go('relatorios')"><span class="nav-icon">📊</span>Relatórios</div>
+    <div class="nav-section">Conta</div>
+    <div class="nav-item" id="nav-notificacoes" onclick="go('notificacoes')"><span class="nav-icon">🔔</span>Notificações</div>
+    <div class="nav-item" id="nav-perfil" onclick="go('perfil')"><span class="nav-icon">👤</span>Meu perfil</div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar">AP</div>
+      <div><div class="user-name">Dra. Ana Paula</div><div class="user-role">Psicóloga · CRP 06/123456</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="page-title" id="page-title">Início</div>
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="go('pendentes')">⏳<div class="notif-dot"></div></div>
+      <div class="icon-btn" onclick="go('notificacoes')">🔔</div>
+      <div class="icon-btn" onclick="go('perfil')">👤</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════════════════════════════════
+         T1 — DASHBOARD PSICÓLOGA
+    ══════════════════════════════════════ -->
+    <div class="screen active" id="screen-dashboard">
+
+      <!-- Métricas -->
+      <div class="grid4" style="margin-bottom:20px">
+        <div class="metric">
+          <div class="m-icon">📅</div>
+          <div class="m-val">8</div>
+          <div class="m-lbl">Consultas hoje</div>
+          <div class="m-trend trend-up">↑ 2 a mais que ontem</div>
+        </div>
+        <div class="metric">
+          <div class="m-icon">⏳</div>
+          <div class="m-val">3</div>
+          <div class="m-lbl">Pendentes de confirmação</div>
+          <div class="m-trend trend-dn">Aguardando sua ação</div>
+        </div>
+        <div class="metric">
+          <div class="m-icon">💰</div>
+          <div class="m-val">R$1.440</div>
+          <div class="m-lbl">Receita esta semana</div>
+          <div class="m-trend trend-up">↑ 12% vs semana passada</div>
+        </div>
+        <div class="metric">
+          <div class="m-icon">👥</div>
+          <div class="m-val">34</div>
+          <div class="m-lbl">Pacientes ativos</div>
+          <div class="m-trend trend-up">↑ 2 novos este mês</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Consultas de hoje -->
+        <div>
+          <div class="sec-header">
+            <div class="sec-title">Consultas de hoje — 9 Jun</div>
+            <button class="sec-link" onclick="go('agenda')">Ver agenda →</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="ag-card">
+              <div class="ag-left"><div class="ag-day">09</div><div class="ag-month">Jun</div></div>
+              <div class="ag-body">
+                <div class="ag-name">Gustavo Henrique</div>
+                <div class="ag-meta">08h00 · Presencial <span class="badge b-confirm">✅ Confirmado</span> <span class="badge b-pago">💰 Pago</span></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">Pré-rel.</button>
+            </div>
+            <div class="ag-card">
+              <div class="ag-left"><div class="ag-day">09</div><div class="ag-month">Jun</div></div>
+              <div class="ag-body">
+                <div class="ag-name">Maria Clara Santos</div>
+                <div class="ag-meta">10h00 · Online <span class="badge b-confirm">✅ Confirmado</span> <span class="badge b-conv">🏥 Unimed</span></div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">Pré-rel.</button>
+            </div>
+            <div class="ag-card">
+              <div class="ag-left"><div class="ag-day">09</div><div class="ag-month">Jun</div></div>
+              <div class="ag-body">
+                <div class="ag-name">Pedro Alves Costa</div>
+                <div class="ag-meta">14h00 · Presencial <span class="badge b-pending">⏳ Pendente</span></div>
+              </div>
+              <div style="display:flex;gap:6px">
+                <button class="btn btn-success btn-sm" onclick="confirmar(this)">Confirmar</button>
+                <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Gráfico + ações -->
+        <div>
+          <div class="sec-header"><div class="sec-title">Ocupação — últimas 4 semanas</div></div>
+          <div class="card-sm" style="margin-bottom:14px">
+            <div class="mini-bar" id="dash-bar">
+              <div class="bar-col"><div class="bar-val">18</div><div class="bar-fill" style="height:54px"></div><div class="bar-lbl">Mai/12</div></div>
+              <div class="bar-col"><div class="bar-val">22</div><div class="bar-fill" style="height:66px"></div><div class="bar-lbl">Mai/19</div></div>
+              <div class="bar-col"><div class="bar-val">20</div><div class="bar-fill" style="height:60px"></div><div class="bar-lbl">Mai/26</div></div>
+              <div class="bar-col"><div class="bar-val">24</div><div class="bar-fill" style="height:72px;background:var(--teal-800)"></div><div class="bar-lbl">Jun/2</div></div>
+              <div class="bar-col"><div class="bar-val">8</div><div class="bar-fill" style="height:24px;background:var(--teal-200)"></div><div class="bar-lbl">Hoje</div></div>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center">Consultas realizadas por semana</div>
+          </div>
+
+          <div class="sec-header"><div class="sec-title">Ações rápidas</div></div>
+          <div style="display:flex;flex-direction:column;gap:7px">
+            <button class="btn btn-primary btn-full" onclick="go('pendentes')" style="padding:11px 16px">⏳ Ver solicitações pendentes (3)</button>
+            <button class="btn btn-ghost btn-full" onclick="go('horarios')" style="padding:11px 16px">🕐 Gerenciar horários disponíveis</button>
+            <button class="btn btn-ghost btn-full" onclick="go('financeiro')" style="padding:11px 16px">💰 Confirmar recebimentos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T2 — AGENDA SEMANAL
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-agenda">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <button class="btn btn-ghost btn-sm">‹ Anterior</button>
+          <div style="font-size:14px;font-weight:500">9 – 13 Jun 2026</div>
+          <button class="btn btn-ghost btn-sm">Próxima ›</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="go('horarios')">+ Bloquear horário</button>
+      </div>
+
+      <div class="week-cal">
+        <div class="week-header">
+          <div class="wh-empty"></div>
+          <div class="wh-day"><div class="wd-name">Seg</div><div class="wd-num">9</div></div>
+          <div class="wh-day today"><div class="wd-name">Ter</div><div class="wd-num">10</div></div>
+          <div class="wh-day"><div class="wd-name">Qua</div><div class="wd-num">11</div></div>
+          <div class="wh-day"><div class="wd-name">Qui</div><div class="wd-num">12</div></div>
+          <div class="wh-day"><div class="wd-name">Sex</div><div class="wd-num">13</div></div>
+        </div>
+        <div class="week-row">
+          <div class="wr-time">08h</div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Gustavo H. — Presencial</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Carla M. — Online</div></div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Paulo S. — Presencial</div></div>
+          <div class="wr-cell"></div>
+        </div>
+        <div class="week-row">
+          <div class="wr-time">09h</div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-pending" onclick="go('pendentes')">Lucas A. — ⏳ Pendente</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Beatriz F. — Online</div></div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Fernanda L. — Presencial</div></div>
+        </div>
+        <div class="week-row">
+          <div class="wr-time">10h</div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Maria C. — Online</div></div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-pending" onclick="go('pendentes')">Rafael T. — ⏳ Pendente</div></div>
+          <div class="wr-cell"></div>
+        </div>
+        <div class="week-row">
+          <div class="wr-time">14h</div>
+          <div class="wr-cell"><div class="ev ev-pending" onclick="go('pendentes')">Pedro A. — ⏳ Pendente</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Ana P. — Presencial</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">João V. — Online</div></div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Camila R. — Presencial</div></div>
+        </div>
+        <div class="week-row">
+          <div class="wr-time">16h</div>
+          <div class="wr-cell"></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Rodrigo M. — Presencial</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Juliana P. — Online</div></div>
+          <div class="wr-cell"><div class="ev ev-confirm" onclick="openModal('modal-prerelatorio')">Mariana S. — Presencial</div></div>
+          <div class="wr-cell"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;font-size:12px;color:var(--muted)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--success-50);border-left:2px solid var(--success);display:inline-block"></span>Confirmado</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;border-radius:2px;background:var(--warning-50);border-left:2px solid var(--warning);display:inline-block"></span>Pendente</span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T3 — GERENCIAR HORÁRIOS
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-horarios">
+      <div class="grid2" style="align-items:start">
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="sec-title" style="margin-bottom:14px">Cadastrar blocos de disponibilidade</div>
+            <div class="field-row">
+              <div class="field"><label>Data</label><input type="date" value="2026-06-10"></div>
+              <div class="field"><label>Modalidade</label><select><option>Presencial</option><option>Online</option><option>Ambas</option></select></div>
+            </div>
+            <div class="field">
+              <label>Horários disponíveis — clique para selecionar</label>
+              <div class="slot-grid">
+                <div class="slot selected" onclick="toggleSlot(this)">08:00</div>
+                <div class="slot booked">09:00</div>
+                <div class="slot selected" onclick="toggleSlot(this)">10:00</div>
+                <div class="slot" onclick="toggleSlot(this)">11:00</div>
+                <div class="slot blocked">12:00</div>
+                <div class="slot" onclick="toggleSlot(this)">13:00</div>
+                <div class="slot selected" onclick="toggleSlot(this)">14:00</div>
+                <div class="slot selected" onclick="toggleSlot(this)">15:00</div>
+                <div class="slot booked">16:00</div>
+                <div class="slot" onclick="toggleSlot(this)">17:00</div>
+              </div>
+              <div style="display:flex;gap:10px;font-size:11px;color:var(--muted);margin-top:4px">
+                <span>🟢 Selecionado</span><span>⬜ Disponível</span>
+                <span style="color:var(--muted2)">— Agendado</span>
+                <span style="color:var(--danger)">✕ Bloqueado</span>
+              </div>
+            </div>
+            <div class="field"><label>Observação (opcional)</label><input type="text" placeholder="Ex: Consultas de retorno apenas"></div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-primary" onclick="showToast('Horários salvos para 10/06!')">Salvar disponibilidade</button>
+              <button class="btn btn-danger btn-sm" onclick="showToast('Dia bloqueado para 10/06')">Bloquear dia inteiro</button>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:14px">Agendar consulta para paciente</div>
+            <div class="field">
+              <label>Paciente</label>
+              <select>
+                <option value="">Selecione o paciente...</option>
+                <option>Gustavo Henrique Barbosa</option>
+                <option>Maria Clara Santos</option>
+                <option>Pedro Alves Costa</option>
+                <option>Lucas Andrade Melo</option>
+              </select>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Data</label><input type="date" value="2026-06-10"></div>
+              <div class="field"><label>Horário</label><select><option>08:00</option><option>10:00</option><option>14:00</option><option>15:00</option></select></div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Modalidade</label><select><option>Presencial</option><option>Online</option></select></div>
+              <div class="field"><label>Tipo de sessão</label><select><option>Individual</option><option>Grupo</option><option>Casal</option></select></div>
+            </div>
+            <div class="field">
+              <label>Forma de pagamento</label>
+              <select id="pag-horario" onchange="toggleConvHorario()">
+                <option>Particular — cartão/PIX</option>
+                <option>Convênio</option>
+                <option>Cortesia (sem cobrança)</option>
+              </select>
+            </div>
+            <div id="conv-horario-field" style="display:none">
+              <div class="field"><label>Convênio do paciente</label><select><option>Unimed — Cart. 0023 4567 8901</option><option>Amil — Cart. 9988 7766 5544</option></select></div>
+            </div>
+            <div class="field"><label>Valor da consulta (R$)</label><input type="number" value="180" placeholder="0,00"></div>
+            <div class="field"><label>Observações</label><textarea placeholder="Notas para este agendamento..."></textarea></div>
+            <button class="btn btn-primary btn-full" onclick="showToast('Consulta agendada com sucesso!')">Agendar consulta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T4 — SOLICITAÇÕES PENDENTES
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-pendentes">
+      <div style="display:flex;flex-direction:column;gap:10px">
+
+        <div class="ag-card" id="pend1">
+          <div class="ag-left"><div class="ag-day">10</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Lucas Andrade Melo</div>
+            <div class="ag-meta">09h00 · Online <span class="badge b-online">Online</span> <span class="badge b-pending">⏳ Aguardando</span></div>
+            <div class="ag-meta" style="margin-top:4px">Motivo: Ansiedade · 1ª consulta · <span class="badge b-conv">🏥 Convênio Amil</span></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="confirmarPend('pend1')">✅ Confirmar</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">❌ Recusar</button>
+          </div>
+        </div>
+
+        <div class="ag-card" id="pend2">
+          <div class="ag-left"><div class="ag-day">12</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Rafael Teixeira Lima</div>
+            <div class="ag-meta">10h00 · Presencial <span class="badge b-pending">⏳ Aguardando</span></div>
+            <div class="ag-meta" style="margin-top:4px">Motivo: Retorno · Paciente regular · <span class="badge b-pago">💳 Particular</span></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="confirmarPend('pend2')">✅ Confirmar</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">❌ Recusar</button>
+          </div>
+        </div>
+
+        <div class="ag-card" id="pend3">
+          <div class="ag-left"><div class="ag-day">14</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Pedro Alves Costa</div>
+            <div class="ag-meta">14h00 · Presencial <span class="badge b-pending">⏳ Aguardando</span></div>
+            <div class="ag-meta" style="margin-top:4px">Motivo: Não informado · 1ª consulta · <span class="badge b-pago">💰 PIX pago</span></div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="confirmarPend('pend3')">✅ Confirmar</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">❌ Recusar</button>
+          </div>
+        </div>
+
+        <div class="card-sm" style="background:var(--surface);border-style:dashed;text-align:center;color:var(--muted);font-size:13px" id="pend-empty" style="display:none">
+          ✅ Nenhuma solicitação pendente no momento.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T5 — TODOS OS AGENDAMENTOS
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-agendamentos">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+        <button class="btn btn-primary btn-sm" onclick="filtAg2('todos',this)">Todos</button>
+        <button class="btn btn-ghost btn-sm" onclick="filtAg2('confirmado',this)">✅ Confirmados</button>
+        <button class="btn btn-ghost btn-sm" onclick="filtAg2('pendente',this)">⏳ Pendentes</button>
+        <button class="btn btn-ghost btn-sm" onclick="filtAg2('realizado',this)">✔ Realizados</button>
+        <button class="btn btn-ghost btn-sm" onclick="filtAg2('cancelado',this)">❌ Cancelados</button>
+        <input type="date" style="width:auto;padding:5px 10px;font-size:12px;border-radius:6px;border:1px solid var(--border)">
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="ag2-list">
+        <div class="ag-card" data-s="confirmado">
+          <div class="ag-left"><div class="ag-day">10</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Gustavo Henrique</div>
+            <div class="ag-meta">08h00 · Presencial <span class="badge b-confirm">✅ Confirmado</span> <span class="badge b-pago">💰 Pago</span></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">Pré-rel.</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">Cancelar</button>
+          </div>
+        </div>
+        <div class="ag-card" data-s="confirmado">
+          <div class="ag-left"><div class="ag-day">10</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Maria Clara Santos</div>
+            <div class="ag-meta">10h00 · Online <span class="badge b-confirm">✅ Confirmado</span> <span class="badge b-conv">🏥 Unimed</span></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">Pré-rel.</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-cancelar-psi')">Cancelar</button>
+          </div>
+        </div>
+        <div class="ag-card" data-s="realizado">
+          <div class="ag-left"><div class="ag-day">03</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Gustavo Henrique</div>
+            <div class="ag-meta">14h00 · Presencial <span class="badge b-done">✔ Realizado</span> <span class="badge b-pago">💰 Pago</span></div>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">Ver rel.</button>
+          </div>
+        </div>
+        <div class="ag-card" data-s="cancelado">
+          <div class="ag-left"><div class="ag-day">28</div><div class="ag-month">Mai</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Carlos Eduardo</div>
+            <div class="ag-meta">09h00 · Presencial <span class="badge b-cancel">❌ Cancelado</span> <span class="badge b-npago">↩ Estornado</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T6 — GERENCIAR PACIENTES
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-pacientes">
+      <div class="grid2" style="align-items:start">
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:14px">
+            <input type="text" placeholder="🔍 Buscar paciente..." style="flex:1">
+            <button class="btn btn-primary btn-sm" onclick="openModal('modal-add-pac')">+ Novo paciente</button>
+          </div>
+          <div id="pac-list">
+            <div class="pac-card" onclick="selectPac('Gustavo Henrique Barbosa','GH','Unimed')">
+              <div class="pac-avatar">GH</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500">Gustavo Henrique Barbosa</div>
+                <div style="font-size:12px;color:var(--muted)">12 consultas · Último: 03/Jun</div>
+              </div>
+              <span class="badge b-confirm">Ativo</span>
+            </div>
+            <div class="pac-card" onclick="selectPac('Maria Clara Santos','MC','Amil')">
+              <div class="pac-avatar" style="background:var(--amber-50);color:var(--amber)">MC</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500">Maria Clara Santos</div>
+                <div style="font-size:12px;color:var(--muted)">7 consultas · Último: 05/Jun</div>
+              </div>
+              <span class="badge b-confirm">Ativo</span>
+            </div>
+            <div class="pac-card" onclick="selectPac('Pedro Alves Costa','PA','Sem convênio')">
+              <div class="pac-avatar" style="background:#EDE9FE;color:#6D28D9">PA</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500">Pedro Alves Costa</div>
+                <div style="font-size:12px;color:var(--muted)">1 consulta · Solicitação pendente</div>
+              </div>
+              <span class="badge b-pending">Pendente</span>
+            </div>
+            <div class="pac-card" onclick="selectPac('Lucas Andrade Melo','LA','Amil')">
+              <div class="pac-avatar" style="background:#FEF3C7;color:#92400E">LA</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:500">Lucas Andrade Melo</div>
+                <div style="font-size:12px;color:var(--muted)">1ª consulta · Aguardando confirmação</div>
+              </div>
+              <span class="badge b-pending">Novo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ficha do paciente -->
+        <div id="ficha-pac" style="display:none">
+          <div class="card">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+              <div class="pac-avatar" style="width:48px;height:48px;font-size:16px" id="ficha-av">GH</div>
+              <div style="flex:1">
+                <div style="font-size:16px;font-weight:500" id="ficha-nome">Gustavo Henrique</div>
+                <div style="font-size:12px;color:var(--muted)" id="ficha-conv">🏥 Unimed</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="openModal('modal-prerelatorio')">+ Anotação</button>
+            </div>
+
+            <div class="tab-bar">
+              <button class="tab-item active" onclick="fichaTab('prontuario',this)">Prontuário</button>
+              <button class="tab-item" onclick="fichaTab('convenio',this)">Convênio</button>
+              <button class="tab-item" onclick="fichaTab('historico',this)">Histórico</button>
+            </div>
+
+            <div id="ftab-prontuario">
+              <div class="pront-entry">
+                <div class="pront-date">03 Jun 2026 · 14h00 · Presencial</div>
+                <div class="pront-text">Paciente relatou redução significativa de episódios ansiosos durante a semana. Foram trabalhadas técnicas de respiração diafragmática e reestruturação cognitiva. Proposta continuidade com exercícios de exposição gradual.</div>
+              </div>
+              <div class="pront-entry">
+                <div class="pront-date">27 Mai 2026 · 14h00 · Presencial</div>
+                <div class="pront-text">Segunda sessão. Paciente apresentou diário de pensamentos bem elaborado. Identificados principais gatilhos de ansiedade relacionados ao ambiente de trabalho. Próxima sessão: técnicas de mindfulness.</div>
+              </div>
+              <div class="pront-entry">
+                <div class="pront-date">20 Mai 2026 · 14h00 · Presencial</div>
+                <div class="pront-text">Primeira sessão. Anamnese completa realizada. Queixa principal: ansiedade generalizada e insônia. Proposta abordagem TCC com frequência semanal.</div>
+              </div>
+            </div>
+
+            <div id="ftab-convenio" style="display:none">
+              <div class="card-sm" style="margin-bottom:10px">
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+                  <div style="font-size:22px">🏥</div>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:500" id="ficha-conv-nome">Unimed</div>
+                    <div style="font-size:12px;color:var(--muted)">Cart. 0023 4567 8901 · Válida 12/2027</div>
+                  </div>
+                  <span class="badge b-confirm">✅ Verificado</span>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-ghost btn-sm" onclick="showToast('Convênio marcado como verificado')">Verificar</button>
+                  <button class="btn btn-danger btn-sm" onclick="showToast('Convênio removido do paciente')">Remover</button>
+                </div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Adicionar convênio ao paciente')">+ Adicionar convênio</button>
+            </div>
+
+            <div id="ftab-historico" style="display:none">
+              <div style="display:flex;flex-direction:column;gap:7px">
+                <div class="fin-row" style="border:.5px solid var(--border);border-radius:8px;padding:10px 12px">
+                  <div class="fr-date">03/Jun</div><div class="fr-name">Consulta presencial</div>
+                  <div class="fr-method">💳 Cartão</div><div class="fr-val">R$ 180</div>
+                  <span class="badge b-pago" style="margin-left:8px">Pago</span>
+                </div>
+                <div class="fin-row" style="border:.5px solid var(--border);border-radius:8px;padding:10px 12px">
+                  <div class="fr-date">27/Mai</div><div class="fr-name">Consulta presencial</div>
+                  <div class="fr-method">🏥 Unimed</div><div class="fr-val">Convênio</div>
+                  <span class="badge b-confirm" style="margin-left:8px">Autorizado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="ficha-empty" class="card-sm" style="background:var(--surface);border-style:dashed;text-align:center;color:var(--muted);font-size:13px;padding:24px">
+          ← Selecione um paciente para ver a ficha
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T7 — CONVÊNIOS (AUTORIZAÇÕES)
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-convenios">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card-sm" style="background:var(--warning-50);border-color:#EF9F2733">
+          <div style="font-size:13px;font-weight:500;color:var(--warning);margin-bottom:2px">⏳ 2 convênios aguardando sua autorização</div>
+          <div style="font-size:12px;color:var(--warning)">Revise e autorize ou recuse a cobertura para prosseguir com os agendamentos.</div>
+        </div>
+
+        <div class="ag-card" id="conv1">
+          <div class="ag-left"><div class="ag-day">17</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Lucas Andrade Melo</div>
+            <div class="ag-meta">09h00 · Online · <strong>🏥 Amil</strong> · Cart. 9988 7766 5544</div>
+            <div class="ag-meta" style="margin-top:4px">
+              <span class="badge b-pending">⏳ Aguardando autorização</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="autorizarConv('conv1')">✅ Autorizar</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-recusar-conv')">❌ Recusar</button>
+          </div>
+        </div>
+
+        <div class="ag-card" id="conv2">
+          <div class="ag-left"><div class="ag-day">24</div><div class="ag-month">Jun</div></div>
+          <div class="ag-body">
+            <div class="ag-name">Gustavo Henrique Barbosa</div>
+            <div class="ag-meta">10h00 · Presencial · <strong>🏥 Unimed</strong> · Cart. 0023 4567 8901</div>
+            <div class="ag-meta" style="margin-top:4px">
+              <span class="badge b-pending">⏳ Aguardando autorização</span>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0">
+            <button class="btn btn-success btn-sm" onclick="autorizarConv('conv2')">✅ Autorizar</button>
+            <button class="btn btn-danger btn-sm" onclick="openModal('modal-recusar-conv')">❌ Recusar</button>
+          </div>
+        </div>
+
+        <div id="conv-ok" style="display:none" class="card-sm" style="background:var(--success-50);border-color:#63992233;text-align:center;font-size:13px;color:var(--success);padding:20px">
+          ✅ Nenhum convênio pendente de autorização.
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T8 — FINANCEIRO / PAGAMENTOS
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-financeiro">
+      <div class="tab-bar" id="fin-tabs">
+        <button class="tab-item active" onclick="finTab('agendamentos',this)">Por agendamento</button>
+        <button class="tab-item" onclick="finTab('mensal',this)">Relatório mensal</button>
+      </div>
+
+      <!-- Por agendamento -->
+      <div id="fin-agend">
+        <div class="grid3" style="margin-bottom:18px">
+          <div class="metric"><div class="m-icon">✅</div><div class="m-val">R$1.080</div><div class="m-lbl">Recebido — Jun</div></div>
+          <div class="metric"><div class="m-icon">⏳</div><div class="m-val">R$360</div><div class="m-lbl">A receber — Jun</div></div>
+          <div class="metric"><div class="m-icon">🏥</div><div class="m-val">R$540</div><div class="m-lbl">Convênio — Jun</div></div>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-bottom:14px">Agendamentos — Junho 2026</div>
+          <div class="fin-row" style="font-size:12px;font-weight:500;color:var(--muted);padding-bottom:8px">
+            <div class="fr-date">Data</div><div class="fr-name">Paciente</div>
+            <div class="fr-method">Método</div><div class="fr-val">Valor</div>
+            <div style="min-width:120px;text-align:right">Ação</div>
+          </div>
+          <div class="fin-row">
+            <div class="fr-date">10/Jun</div><div class="fr-name">Gustavo Henrique</div>
+            <div class="fr-method">💳 Cartão</div><div class="fr-val">R$ 180</div>
+            <div style="min-width:120px;text-align:right"><span class="badge b-pago">✅ Pago</span></div>
+          </div>
+          <div class="fin-row">
+            <div class="fr-date">10/Jun</div><div class="fr-name">Maria Clara Santos</div>
+            <div class="fr-method">🏥 Unimed</div><div class="fr-val">R$ 180</div>
+            <div style="min-width:120px;text-align:right"><span class="badge b-conv">🏥 Autorizado</span></div>
+          </div>
+          <div class="fin-row">
+            <div class="fr-date">09/Jun</div><div class="fr-name">Pedro Alves Costa</div>
+            <div class="fr-method">⚡ PIX</div><div class="fr-val">R$ 180</div>
+            <div style="min-width:120px;text-align:right">
+              <button class="btn btn-success btn-sm" onclick="confirmarPag(this)">Confirmar recebimento</button>
+            </div>
+          </div>
+          <div class="fin-row">
+            <div class="fr-date">03/Jun</div><div class="fr-name">Gustavo Henrique</div>
+            <div class="fr-method">💳 Cartão</div><div class="fr-val">R$ 180</div>
+            <div style="min-width:120px;text-align:right"><span class="badge b-pago">✅ Pago</span></div>
+          </div>
+          <div class="fin-row">
+            <div class="fr-date">03/Jun</div><div class="fr-name">Rafael Teixeira Lima</div>
+            <div class="fr-method">⚡ PIX</div><div class="fr-val">R$ 180</div>
+            <div style="min-width:120px;text-align:right">
+              <button class="btn btn-success btn-sm" onclick="confirmarPag(this)">Confirmar recebimento</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Relatório mensal -->
+      <div id="fin-mensal" style="display:none">
+        <div class="grid4" style="margin-bottom:18px">
+          <div class="metric"><div class="m-icon">📈</div><div class="m-val">R$3.240</div><div class="m-lbl">Receita total — Mai</div></div>
+          <div class="metric"><div class="m-icon">💳</div><div class="m-val">R$1.620</div><div class="m-lbl">Particular</div></div>
+          <div class="metric"><div class="m-icon">🏥</div><div class="m-val">R$1.080</div><div class="m-lbl">Convênio</div></div>
+          <div class="metric"><div class="m-icon">⚡</div><div class="m-val">R$540</div><div class="m-lbl">PIX</div></div>
+        </div>
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="sec-title">Receita por semana — Maio 2026</div>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Exportando relatório PDF...')">📄 Exportar PDF</button>
+          </div>
+          <div class="mini-bar" style="height:100px">
+            <div class="bar-col"><div class="bar-val" style="font-size:11px">R$720</div><div class="bar-fill" style="height:55px"></div><div class="bar-lbl">1ª sem</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:11px">R$900</div><div class="bar-fill" style="height:69px"></div><div class="bar-lbl">2ª sem</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:11px">R$720</div><div class="bar-fill" style="height:55px"></div><div class="bar-lbl">3ª sem</div></div>
+            <div class="bar-col"><div class="bar-val" style="font-size:11px">R$900</div><div class="bar-fill" style="height:69px;background:var(--teal-800)"></div><div class="bar-lbl">4ª sem</div></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+            <div class="card-sm"><div style="font-size:12px;color:var(--muted)">Consultas realizadas</div><div style="font-size:20px;font-weight:500;margin-top:2px">18</div></div>
+            <div class="card-sm"><div style="font-size:12px;color:var(--muted)">Taxa de cancelamento</div><div style="font-size:20px;font-weight:500;margin-top:2px;color:var(--danger)">8%</div></div>
+            <div class="card-sm"><div style="font-size:12px;color:var(--muted)">Ticket médio</div><div style="font-size:20px;font-weight:500;margin-top:2px">R$ 180</div></div>
+            <div class="card-sm"><div style="font-size:12px;color:var(--muted)">Pacientes atendidos</div><div style="font-size:20px;font-weight:500;margin-top:2px">14</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T9 — RELATÓRIOS
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-relatorios">
+      <div class="tab-bar">
+        <button class="tab-item active" onclick="relTab('clinica',this)">Clínica Bem-Estar</button>
+        <button class="tab-item" onclick="relTab('mental',this)">Mental Saúde</button>
+        <button class="tab-item" onclick="relTab('consolidado',this)">Consolidado</button>
+      </div>
+      <div id="rel-content">
+        <div class="grid4" style="margin-bottom:18px">
+          <div class="metric"><div class="m-icon">📅</div><div class="m-val">24</div><div class="m-lbl">Consultas — Jun</div><div class="m-trend trend-up">↑ 9% vs Mai</div></div>
+          <div class="metric"><div class="m-icon">👥</div><div class="m-val">34</div><div class="m-lbl">Pacientes ativos</div><div class="m-trend trend-up">↑ 2 novos</div></div>
+          <div class="metric"><div class="m-icon">📉</div><div class="m-val">8%</div><div class="m-lbl">Taxa cancelamento</div><div class="m-trend trend-dn">↓ melhora</div></div>
+          <div class="metric"><div class="m-icon">💰</div><div class="m-val">R$3.240</div><div class="m-lbl">Receita — Mai</div><div class="m-trend trend-up">↑ 12%</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+              <div class="sec-title">Ocupação semanal</div>
+            </div>
+            <div class="mini-bar" style="height:90px">
+              <div class="bar-col"><div class="bar-val">18</div><div class="bar-fill" style="height:50px"></div><div class="bar-lbl">Fev</div></div>
+              <div class="bar-col"><div class="bar-val">20</div><div class="bar-fill" style="height:56px"></div><div class="bar-lbl">Mar</div></div>
+              <div class="bar-col"><div class="bar-val">22</div><div class="bar-fill" style="height:62px"></div><div class="bar-lbl">Abr</div></div>
+              <div class="bar-col"><div class="bar-val">18</div><div class="bar-fill" style="height:50px"></div><div class="bar-lbl">Mai</div></div>
+              <div class="bar-col"><div class="bar-val">24</div><div class="bar-fill" style="height:68px;background:var(--teal-800)"></div><div class="bar-lbl">Jun</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:12px">Por forma de pagamento</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:13px;min-width:100px">💳 Cartão</div>
+                <div style="flex:1;height:10px;background:var(--surface);border-radius:5px;overflow:hidden"><div style="height:100%;background:var(--teal-800);width:50%;border-radius:5px"></div></div>
+                <div style="font-size:12px;color:var(--muted);min-width:30px">50%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:13px;min-width:100px">🏥 Convênio</div>
+                <div style="flex:1;height:10px;background:var(--surface);border-radius:5px;overflow:hidden"><div style="height:100%;background:var(--amber);width:33%;border-radius:5px"></div></div>
+                <div style="font-size:12px;color:var(--muted);min-width:30px">33%</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="font-size:13px;min-width:100px">⚡ PIX</div>
+                <div style="flex:1;height:10px;background:var(--surface);border-radius:5px;overflow:hidden"><div style="height:100%;background:var(--teal-500);width:17%;border-radius:5px"></div></div>
+                <div style="font-size:12px;color:var(--muted);min-width:30px">17%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px">
+          <button class="btn btn-ghost" onclick="showToast('Exportando relatório PDF...')">📄 Exportar PDF</button>
+          <button class="btn btn-ghost" onclick="showToast('Exportando planilha Excel...')">📊 Exportar Excel</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T10 — NOTIFICAÇÕES
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-notificacoes">
+      <div class="grid2" style="align-items:start">
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div class="sec-title">Notificações</div>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Todas marcadas como lidas')">Marcar como lidas</button>
+          </div>
+          <div style="display:flex;flex-direction:column">
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:13px;font-weight:500">Nova solicitação — Lucas Andrade</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Solicitou agendamento para 17/Jun às 09h via convênio Amil.</div><div style="font-size:11px;color:var(--muted2);margin-top:4px">Há 30 min</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border)">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:13px;font-weight:500">Pagamento confirmado — Pedro Alves</div><div style="font-size:12px;color:var(--muted);margin-top:2px">PIX de R$ 180,00 recebido para consulta de 09/Jun.</div><div style="font-size:11px;color:var(--muted2);margin-top:4px">Há 2 horas</div></div>
+            </div>
+            <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 0">
+              <div style="width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:5px"></div>
+              <div><div style="font-size:13px;font-weight:500;color:var(--muted)">Consulta cancelada — Carlos Eduardo</div><div style="font-size:12px;color:var(--muted);margin-top:2px">Cancelou a consulta de 28/Mai. Estorno processado.</div><div style="font-size:11px;color:var(--muted2);margin-top:4px">Há 12 dias</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-bottom:14px">Preferências</div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">📧 E-mail</div><div style="font-size:12px;color:var(--muted)">ana.paula@email.com</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">💬 WhatsApp</div><div style="font-size:12px;color:var(--muted)">(11) 98888-7777</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">Nova solicitação</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">Pagamento recebido</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">Cancelamento de paciente</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">Lembrete 1h antes</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         T11 — PERFIL PSICÓLOGA
+    ══════════════════════════════════════ -->
+    <div class="screen" id="screen-perfil">
+      <div class="tab-bar">
+        <button class="tab-item active" onclick="psiTab('dados',this)">Dados profissionais</button>
+        <button class="tab-item" onclick="psiTab('clinicas',this)">Clínicas vinculadas</button>
+        <button class="tab-item" onclick="psiTab('convenios_psi',this)">Convênios aceitos</button>
+      </div>
+
+      <div id="psitab-dados">
+        <div class="grid2" style="align-items:start">
+          <div class="card">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+              <div style="width:56px;height:56px;border-radius:50%;background:var(--teal-200);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:500;color:var(--teal-800)">AP</div>
+              <div><div style="font-size:16px;font-weight:500">Dra. Ana Paula Ferreira</div><div style="font-size:13px;color:var(--teal-700)">CRP 06/123456</div></div>
+            </div>
+            <div class="field"><label>Nome completo</label><input type="text" value="Ana Paula Ferreira Costa"></div>
+            <div class="field-row">
+              <div class="field"><label>CRP</label><input type="text" value="06/123456"></div>
+              <div class="field"><label>Telefone</label><input type="tel" value="(11) 98888-7777"></div>
+            </div>
+            <div class="field"><label>Especialidade principal</label><select><option selected>Terapia Cognitivo-Comportamental (TCC)</option><option>Psicanálise</option><option>Gestalt-terapia</option></select></div>
+            <div class="field"><label>Modalidade</label><select><option selected>Presencial e Online</option><option>Presencial</option><option>Online</option></select></div>
+            <div class="field"><label>Biografia / Apresentação</label><textarea>Psicóloga clínica com 8 anos de experiência em TCC, especializada em ansiedade, depressão e desenvolvimento pessoal. Atendimento humanizado e baseado em evidências.</textarea></div>
+            <button class="btn btn-primary" onclick="showToast('Perfil salvo!')">Salvar alterações</button>
+          </div>
+          <div class="card">
+            <div class="sec-title" style="margin-bottom:14px">Segurança</div>
+            <div class="field"><label>Senha atual</label><input type="password" placeholder="••••••••"></div>
+            <div class="field"><label>Nova senha</label><input type="password" placeholder="Mín. 8 caracteres"></div>
+            <button class="btn btn-ghost" onclick="showToast('Senha alterada!')">Alterar senha</button>
+            <div style="margin-top:20px">
+              <div class="sec-title" style="margin-bottom:10px">Valor padrão da consulta</div>
+              <div class="field"><label>Valor particular (R$)</label><input type="number" value="180"></div>
+              <button class="btn btn-ghost btn-sm" onclick="showToast('Valor atualizado!')">Salvar valor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="psitab-clinicas" style="display:none">
+        <div class="grid2" style="align-items:start">
+          <div>
+            <div class="card-sm" style="margin-bottom:8px;display:flex;align-items:center;gap:12px">
+              <div style="width:40px;height:40px;border-radius:9px;background:var(--teal-800);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:#fff">B</div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:500">Clínica Bem-Estar</div><div style="font-size:12px;color:var(--muted)">Av. Paulista, 1200 · Mogi das Cruzes</div></div>
+              <span class="badge b-confirm">Ativa</span>
+            </div>
+            <div class="card-sm" style="margin-bottom:8px;display:flex;align-items:center;gap:12px">
+              <div style="width:40px;height:40px;border-radius:9px;background:#5B8FB9;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:16px;color:#fff">M</div>
+              <div style="flex:1"><div style="font-size:14px;font-weight:500">Mental Saúde</div><div style="font-size:12px;color:var(--muted)">Rua XV, 340 · Suzano</div></div>
+              <span class="badge b-confirm">Ativa</span>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Solicitar vínculo com nova clínica')">+ Solicitar nova clínica</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="psitab-convenios_psi" style="display:none">
+        <div class="card" style="max-width:500px">
+          <div class="sec-title" style="margin-bottom:14px">Convênios aceitos na clínica</div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">🏥 Unimed</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">🏥 Amil</div></div><label class="toggle"><input type="checkbox" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">🏥 SulAmérica</div></div><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">🏥 Bradesco Saúde</div></div><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <div class="toggle-row"><div><div style="font-size:14px;font-weight:500">🏥 Hapvida</div></div><label class="toggle"><input type="checkbox"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+          <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="showToast('Convênios salvos!')">Salvar convênios aceitos</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-prerelatorio">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal('modal-prerelatorio')">×</button>
+    <div class="modal-title">Pré-relatório de atendimento</div>
+    <div class="modal-sub">Gustavo Henrique · 10/Jun · 08h00 · Presencial</div>
+    <div class="field"><label>Queixa principal da sessão</label><textarea placeholder="Descreva o foco desta sessão...">Paciente relatou melhora nos episódios ansiosos. Foco: técnicas de exposição gradual.</textarea></div>
+    <div class="field-row">
+      <div class="field"><label>Humor do paciente</label><select><option>Estável</option><option>Ansioso</option><option>Deprimido</option><option>Bem-humorado</option><option>Agitado</option></select></div>
+      <div class="field"><label>Tipo de intervenção</label><select><option>TCC</option><option>Psicanálise</option><option>Mindfulness</option><option>Exposição gradual</option></select></div>
+    </div>
+    <div class="field"><label>Evolução observada</label><textarea placeholder="Progressos, retrocessos, observações clínicas...">Boa evolução. Paciente demonstra maior consciência dos gatilhos ansiosos e aplica técnicas de forma autônoma.</textarea></div>
+    <div class="field"><label>Encaminhamento / próxima sessão</label><textarea placeholder="O que será trabalhado na próxima sessão...">Continuar exposição gradual. Introduzir técnicas de mindfulness para manejo do estresse no trabalho.</textarea></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-prerelatorio')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="salvarRel()">Salvar pré-relatório</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-cancelar-psi">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal('modal-cancelar-psi')">×</button>
+    <div class="modal-title">Cancelar consulta</div>
+    <div class="modal-sub">Informe o motivo para notificar o paciente automaticamente.</div>
+    <div class="field"><label>Motivo do cancelamento</label><select><option>Emergência pessoal</option><option>Paciente não compareceu</option><option>Problema técnico (online)</option><option>Feriado / folga</option><option>Outro</option></select></div>
+    <div class="field"><label>Mensagem ao paciente (opcional)</label><textarea placeholder="Ex: Precisei cancelar por emergência. Podemos remarcar para..."></textarea></div>
+    <div class="card-sm" style="background:var(--warning-50);border-color:#EF9F2733;margin-bottom:14px">
+      <div style="font-size:12px;color:var(--warning)">⚠️ O paciente será notificado por e-mail e WhatsApp. Se houver pagamento, o estorno será processado automaticamente.</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-cancelar-psi')">Voltar</button>
+      <button class="btn btn-danger" style="flex:1" onclick="closeModal('modal-cancelar-psi');showToast('Consulta cancelada. Paciente notificado.')">Confirmar cancelamento</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-recusar-conv">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal('modal-recusar-conv')">×</button>
+    <div class="modal-title">Recusar cobertura de convênio</div>
+    <div class="modal-sub">O paciente será informado e precisará escolher outra forma de pagamento.</div>
+    <div class="field"><label>Motivo da recusa</label><select><option>Convênio não aceito nesta clínica</option><option>Carteirinha vencida</option><option>Procedimento não coberto</option><option>Número de carteirinha inválido</option></select></div>
+    <div class="field"><label>Observação ao paciente</label><textarea placeholder="Ex: Seu plano não cobre consultas psicológicas nesta modalidade..."></textarea></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-recusar-conv')">Voltar</button>
+      <button class="btn btn-danger" style="flex:1" onclick="closeModal('modal-recusar-conv');showToast('Convênio recusado. Paciente notificado.')">Confirmar recusa</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-pac">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal('modal-add-pac')">×</button>
+    <div class="modal-title">Novo paciente</div>
+    <div class="modal-sub">Cadastre um novo paciente na clínica.</div>
+    <div class="field-row">
+      <div class="field"><label>Nome</label><input type="text" placeholder="Nome"></div>
+      <div class="field"><label>Sobrenome</label><input type="text" placeholder="Sobrenome"></div>
+    </div>
+    <div class="field"><label>E-mail</label><input type="email" placeholder="paciente@email.com"></div>
+    <div class="field"><label>Telefone</label><input type="tel" placeholder="(11) 99999-9999"></div>
+    <div class="field"><label>Convênio (opcional)</label><select><option value="">Sem convênio</option><option>Unimed</option><option>Amil</option><option>SulAmérica</option><option>Bradesco Saúde</option></select></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add-pac')">Cancelar</button>
+      <button class="btn btn-primary" style="flex:1" onclick="closeModal('modal-add-pac');showToast('Paciente cadastrado! Convite enviado por e-mail.')">Cadastrar e convidar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="qnav">
+  <div class="qnav-title">Telas — Psicóloga</div>
+  <button onclick="go('dashboard')" id="qn-dashboard" class="on">T1 Dashboard</button>
+  <button onclick="go('agenda')" id="qn-agenda">T2 Agenda semanal</button>
+  <button onclick="go('horarios')" id="qn-horarios">T3 Gerenciar horários</button>
+  <button onclick="go('pendentes')" id="qn-pendentes">T4 Pendentes</button>
+  <button onclick="go('agendamentos')" id="qn-agendamentos">T5 Agendamentos</button>
+  <button onclick="go('pacientes')" id="qn-pacientes">T6 Pacientes</button>
+  <button onclick="go('convenios')" id="qn-convenios">T7 Convênios</button>
+  <button onclick="go('financeiro')" id="qn-financeiro">T8 Financeiro</button>
+  <button onclick="go('relatorios')" id="qn-relatorios">T9 Relatórios</button>
+  <button onclick="go('notificacoes')" id="qn-notificacoes">T10 Notificações</button>
+  <button onclick="go('perfil')" id="qn-perfil">T11 Perfil</button>
+</div>
+
+<script>
+const titles={dashboard:'Início',agenda:'Agenda semanal',horarios:'Gerenciar horários',pendentes:'Solicitações pendentes',agendamentos:'Todos os agendamentos',pacientes:'Gerenciar pacientes',convenios:'Autorizações de convênio',financeiro:'Financeiro & Pagamentos',relatorios:'Relatórios',notificacoes:'Notificações',perfil:'Meu perfil'};
+
+function go(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.qnav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('screen-'+id).classList.add('active');
+  const ni=document.getElementById('nav-'+id);if(ni)ni.classList.add('active');
+  const qi=document.getElementById('qn-'+id);if(qi)qi.classList.add('on');
+  document.getElementById('page-title').textContent=titles[id]||id;
+}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800)}
+function confirmar(btn){const c=btn.closest('.ag-card');c.querySelector('.b-pending').className='badge b-confirm';c.querySelector('.b-pending,.b-confirm').textContent='✅ Confirmado';btn.closest('div').innerHTML='<button class="btn btn-ghost btn-sm" onclick="openModal(\'modal-prerelatorio\')">Pré-rel.</button>';showToast('Consulta confirmada!')}
+function confirmarPend(id){
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='.4';el.style.pointerEvents='none';el.querySelector('.b-pending').textContent='✅ Confirmado';el.querySelector('.b-pending,.b-confirm').className='badge b-confirm';}
+  showToast('Consulta confirmada! Paciente notificado.');
+}
+function autorizarConv(id){
+  const el=document.getElementById(id);
+  if(el){el.style.opacity='.4';el.style.pointerEvents='none';el.querySelector('.b-pending').textContent='✅ Autorizado';el.querySelector('.b-pending,.b-confirm').className='badge b-confirm';}
+  showToast('Convênio autorizado! Paciente notificado.');
+  const rem=document.querySelectorAll('[id^=conv]:not([style*=opacity])');
+  if(!rem.length)setTimeout(()=>{const ok=document.getElementById('conv-ok');if(ok)ok.style.display='block'},500);
+}
+function filtAg2(f,btn){
+  document.querySelectorAll('#screen-agendamentos .btn').forEach(b=>{b.className=b.id?'btn btn-ghost btn-sm':'btn btn-ghost btn-sm'});
+  btn.className='btn btn-primary btn-sm';
+  document.querySelectorAll('#ag2-list .ag-card').forEach(c=>{c.style.display=(f==='todos'||c.dataset.s===f)?'flex':'none'});
+}
+function selectPac(nome,av,conv){
+  document.getElementById('ficha-pac').style.display='block';
+  document.getElementById('ficha-empty').style.display='none';
+  document.getElementById('ficha-nome').textContent=nome;
+  document.getElementById('ficha-av').textContent=av;
+  document.getElementById('ficha-conv').textContent=conv==='Sem convênio'?'Sem convênio':'🏥 '+conv;
+  const cn=document.getElementById('ficha-conv-nome');if(cn)cn.textContent=conv;
+}
+function fichaTab(t,el){
+  ['prontuario','convenio','historico'].forEach(tab=>{
+    const c=document.getElementById('ftab-'+tab);if(c)c.style.display=tab===t?'block':'none';
+  });
+  el.closest('.tab-bar').querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function toggleSlot(el){el.classList.toggle('selected')}
+function toggleConvHorario(){
+  const v=document.getElementById('pag-horario').value;
+  document.getElementById('conv-horario-field').style.display=v==='Convênio'?'block':'none';
+}
+function finTab(t,el){
+  document.getElementById('fin-agend').style.display=t==='agendamentos'?'block':'none';
+  document.getElementById('fin-mensal').style.display=t==='mensal'?'block':'none';
+  document.getElementById('fin-tabs').querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function relTab(t,el){
+  el.closest('.tab-bar').querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  const labels={clinica:'Clínica Bem-Estar',mental:'Mental Saúde',consolidado:'Todas as clínicas (consolidado)'};
+  showToast('Relatório: '+labels[t]);
+}
+function psiTab(t,el){
+  ['dados','clinicas','convenios_psi'].forEach(tab=>{const c=document.getElementById('psitab-'+tab);if(c)c.style.display=tab===t?'block':'none'});
+  el.closest('.tab-bar').querySelectorAll('.tab-item').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+}
+function salvarRel(){closeModal('modal-prerelatorio');showToast('Pré-relatório salvo no prontuário!')}
+function confirmarPag(btn){btn.outerHTML='<span class="badge b-pago">✅ Pago</span>';showToast('Recebimento confirmado!')}
+</script>
+</body>
+</html>
